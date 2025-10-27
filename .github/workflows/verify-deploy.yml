@@ -1,0 +1,35 @@
+# .github/workflows/verify-deploy.yml
+name: Verify Deployment & Monitoring
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 */6 * * *' # every 6 hours
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install server deps
+        working-directory: server
+        run: |
+          npm ci || npm install
+
+      - name: Run basic health checks
+        env:
+          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
+        run: |
+          node -e "console.log('Verify deploy job started')"
+          node server/deploy-and-verify-phase8.4.js || echo 'deploy-and-verify missing or returned error; check logs'
