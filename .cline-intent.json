@@ -1,0 +1,53 @@
+{
+  "projectName": "mbarie-fms-ai",
+  "primaryGoal": "Develop a complete AI-powered facility management assistant for Mbarie Services Ltd with multimodal communication and automated reporting.",
+  "currentStatus": "Interactive chat system fully implemented (voice, file, and AI email workflow complete).",
+  "nextTasks": [
+    "Integrate Cline extension for autonomous coding and testing",
+    "Enable deployment-ready Docker configuration for production",
+    "Add admin dashboard for monitoring communications and logs",
+    "Enhance AI context with personnel behavioral patterns and task history"
+  ],
+  "preferredTechStack": {
+    "frontend": "React + TypeScript + Vite + TailwindCSS",
+    "backend": "Node.js (Express + Prisma)",
+    "database": "PostgreSQL (for production)",
+    "ai": "OpenAI GPT-4",
+    "email": "Nodemailer with company SMTP",
+    "container": "Docker + Docker Compose"
+  },
+  "aiAgent": {
+    "personality": "Professional, responsive, proactive in facility and safety management",
+    "voiceEnabled": true,
+    "fileHandling": true,
+    "emailAutomation": true
+  },
+  "projectStructure": {
+    "root": "mbarie-fms-ai/",
+    "server": "server/",
+    "client": "client/",
+    "aiAgent": "ai-agent/",
+    "database": "server/prisma/",
+    "uploads": "server/uploads/"
+  },
+  "keyFeatures": [
+    "Real-time AI chat with context awareness",
+    "Multimodal input (text, voice, file upload)",
+    "File processing (PDF, DOCX, CSV, images with OCR)",
+    "AI-generated email drafts with approval workflow",
+    "Communication logging and analytics",
+    "Voice I/O using Web Speech API",
+    "Email automation with intelligent routing"
+  ],
+  "deploymentTargets": [
+    "Render (full-stack)",
+    "Vercel (frontend) + Railway (backend)",
+    "Docker containers for portability"
+  ],
+  "testingRequirements": [
+    "Unit tests for file processors",
+    "Integration tests for chat endpoints",
+    "E2E tests for complete workflows",
+    "Performance testing for file uploads"
+  ]
+}

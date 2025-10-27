@@ -1,0 +1,319 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  employeeId  String   @unique
+  firstName   String
+  lastName    String
+  email       String   @unique
+  password    String?  // Hashed password for authentication
+  role        UserRole @default(GUEST) // Role-based access control
+  jobTitle    String   // Renamed from 'position' to avoid conflict
+  department  String
+  facility    String
+  isActive    Boolean  @default(true)
+  positionId  String?
+  lastLogin   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  accessLogs  AccessLog[]
+  clockIns    ClockIn[]
+  toolboxMeetings ToolboxMeeting[]
+  alerts      Alert[]
+  communicationLogs CommunicationLog[]
+  
+  // Phase 5 relationships
+  userPosition Position? @relation("UserPosition", fields: [positionId], references: [id])
+  // Removed duplicate relation that referenced the same positionId field and caused a constraint name collision
+  certifications Certification[]
+  delegates   Delegate[] @relation("UserDelegates")
+  userDelegates Delegate[] @relation("DelegateTo")
+  permits     Permit[]
+  permitApprovals PermitApproval[]
+  documents   Document[]
+  materialTransfers MaterialTransfer[]
+  hsseIncidents HSSEIncident[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  STOREKEEPER
+  TECHNICIAN
+  GUEST
+}
+
+model AccessLog {
+  id        String   @id @default(cuid())
+  userId    String
+  facility  String
+  zone      String
+  direction String   // "entry" or "exit"
+  timestamp DateTime @default(now())
+  method    String   @default("fingerprint") // fingerprint, manual, etc.
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("access_logs")
+}
+
+model ClockIn {
+  id        String   @id @default(cuid())
+  userId    String
+  facility  String
+  type      String   // "clock_in" or "clock_out"
+  timestamp DateTime @default(now())
+  notes     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("clock_ins")
+}
+
+model ToolboxMeeting {
+  id          String   @id @default(cuid())
+  userId      String
+  facility    String
+  date        DateTime @default(now())
+  ppeVerified Boolean  @default(false)
+  safetyTopic String
+  hazards     String?
+  attendees   String   // Comma-separated user IDs who attended
+  notes       String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("toolbox_meetings")
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  type        String   // "daily", "weekly", "anomaly"
+  period      String   // e.g., "2024-01-15", "2024-W02"
+  data        String   // Report data in JSON string format
+  generatedAt DateTime @default(now())
+  sentTo      String   // Comma-separated email addresses
+  status      String   @default("generated") // generated, sent, failed
+
+  @@map("reports")
+}
+
+model Alert {
+  id          String   @id @default(cuid())
+  type        String   // "missing_clock_out", "missed_toolbox", "anomaly"
+  userId      String?
+  facility    String
+  description String
+  severity    String   @default("medium") // low, medium, high, critical
+  resolved    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  resolvedAt  DateTime?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("alerts")
+}
+
+model MonitorLog {
+  id                    String   @id @default(cuid())
+  summary               String
+  reportCount           Int
+  alertCount            Int
+  accessLogCount        Int
+  clockInCount          Int
+  toolboxMeetingCount   Int
+  createdAt             DateTime @default(now())
+
+  @@map("monitor_logs")
+}
+
+model CommunicationLog {
+  id           Int      @id @default(autoincrement())
+  userId       String?
+  userName     String?
+  role         String?     // "user" | "ai" | "system"
+  type         String      // "chat" | "file" | "email_draft" | "voice"
+  summary      String?     // short AI-generated summary
+  content      String?     // raw content text (or small excerpt)
+  filePath     String?     // server path if file uploaded
+  fileName     String?
+  fileType     String?
+  emailSent    Boolean     @default(false)
+  createdAt    DateTime    @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("communication_logs")
+}
+
+// ---------- Phase 5 models (append) ----------
+model Position {
+  id          String    @id @default(cuid())
+  title       String
+  department  String
+  supervisor  Position? @relation("SupervisorOf", fields: [supervisorId], references: [id])
+  supervisorId String?
+  supervisedPositions Position[] @relation("SupervisorOf")
+  // Removed users relation; User already defines userPosition with relation name "UserPosition"
+  userPositions User[]  @relation("UserPosition")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("positions")
+}
+
+model Delegate {
+  id          String   @id @default(cuid())
+  user        User     @relation("UserDelegates", fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  delegateTo  User     @relation("DelegateTo", fields: [delegateToId], references: [id], onDelete: Cascade)
+  delegateToId String
+  startAt     DateTime
+  endAt       DateTime
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@map("delegates")
+}
+
+model Certification {
+  id         String   @id @default(cuid())
+  name       String
+  issuedBy   String?
+  expiryDate DateTime?
+  user       User?    @relation(fields: [userId], references: [id])
+  userId     String?
+
+  @@map("certifications")
+}
+
+model Permit {
+  id            String   @id @default(cuid())
+  type          String
+  title         String
+  requester     User     @relation(fields: [requesterId], references: [id])
+  requesterId   String
+  jobId         String?
+  requiredCerts String   // Comma-separated list of required certifications
+  status        String    @default("draft") // draft, requested, pending, approved, rejected, closed
+  steps         String?   // JSON string for steps
+  attachments   String?   // JSON string for attachments
+  severity      Int       @default(1)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  permitApprovals PermitApproval[]
+
+  @@map("permits")
+}
+
+model PermitApproval {
+  id          String   @id @default(cuid())
+  permit      Permit   @relation(fields: [permitId], references: [id])
+  permitId    String
+  approver    User     @relation(fields: [approverId], references: [id])
+  approverId  String
+  status      String   @default("pending") // pending, approved, rejected
+  comments    String?
+  actedAt     DateTime?
+  createdAt   DateTime @default(now())
+
+  @@map("permit_approvals")
+}
+
+model Document {
+  id         String   @id @default(cuid())
+  title      String
+  version    Int      @default(1)
+  path       String
+  owner      User     @relation(fields: [ownerId], references: [id])
+  ownerId    String
+  status     String   @default("draft") // draft, review, approved, archived
+  metadata   String?   // JSON string for metadata
+  expiry     DateTime?
+  approvals  String?   // JSON string for approvals
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("documents")
+}
+
+model Material {
+  id          String   @id @default(cuid())
+  sku         String   @unique
+  description String?
+  qty         Int      @default(0)
+  location    String?
+  minLevel    Int?
+  reorderLevel Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  materialTransfers MaterialTransfer[]
+
+  @@map("materials")
+}
+
+model MaterialTransfer {
+  id            String   @id @default(cuid())
+  material      Material @relation(fields: [materialId], references: [id])
+  materialId    String
+  fromLocation  String
+  toLocation    String
+  qty           Int
+  requestedBy   User?    @relation(fields: [requestedById], references: [id])
+  requestedById String?
+  status        String   @default("requested") // requested, in_transit, delivered, canceled
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("material_transfers")
+}
+
+model HSSEIncident {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  reportedBy  User     @relation(fields: [reportedById], references: [id])
+  reportedById String
+  severity    Int      @default(1)
+  status      String   @default("open") // open, investigating, closed
+  attachments String?   // JSON string for attachments
+  actions     String?   // JSON string for actions
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("hsse_incidents")
+}
+
+// Phase 7.6 - AI Tasks queue persistence
+model ai_tasks {
+  id         String     @id @default(cuid())
+  agent      String
+  task_type  String
+  status     TaskStatus @default(PENDING)
+  payload    Json
+  result     Json?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  SYNCED
+}

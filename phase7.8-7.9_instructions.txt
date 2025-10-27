@@ -1,0 +1,93 @@
+Mbarie FMS AI — Phase 7.8 & 7.9 Unified Implementation Prompt
+
+=============================================================
+🧠 Phase 7.8: Unified Frontend & AI Recovery Integration
+=============================================================
+
+🎯 Objective:
+Develop a unified, production-ready frontend and restore all AI systems (DeepSeek + OpenAI fallback). 
+Ensure seamless user access, modern UI/UX, and end-to-end connection between the Predictive Maintenance engine, Inventory AI, and Storekeeper modules.
+
+-------------------------------------------------------------
+🔹 Core Tasks
+-------------------------------------------------------------
+
+1. Advanced UI/UX Integration
+   - Redesign homepage as main entry point (not dashboard)
+   - Top navigation bar: Home, Dashboard, Inventory, Maintenance, AI Chat, Agents, Settings, Profile
+   - Sidebar with hover icons & animations
+   - Responsive layout + dark/light mode toggle
+
+2. AI Chat & AI Agent Restoration
+   - Restore DeepSeek + OpenAI fallback logic
+   - Fix "try again later" & "unable to process message" errors
+   - Add robust error handling + visual feedback (loading, fail, retry)
+   - Integrate voice commands + file uploads via Web Speech API
+   - Implement file recognition + summary support
+
+3. PostgreSQL & Backend Synchronization
+   - Verify PostgreSQL connection using existing credentials
+   - Add reconnection logic & ensure all modules sync correctly
+   - Store file uploads + chat logs (metadata + pointers) in DB
+
+4. Deployment & Testing
+   - Deploy to existing Netlify project: lambent-raindrop-ec0707
+   - Ensure homepage is default landing route (/)
+   - Validate all menu links and AI/database connectivity post-deploy
+
+
+=============================================================
+🧩 Phase 7.9: User Registration, Authentication & Menu Activation
+=============================================================
+
+🎯 Objective:
+Enable secure user onboarding, login/logout management, and activate all menus with smooth navigation and connected AI modules.
+
+-------------------------------------------------------------
+🔹 Core Tasks
+-------------------------------------------------------------
+
+1. User Registration & Authentication
+   - Implement JWT-based registration/login/logout
+   - PostgreSQL for user storage
+   - Features: Forgot password, email validation, role-based access (Admin, Storekeeper, Technician, Guest)
+
+2. Menu Activation & Routing
+   - Activate routes: /home, /dashboard, /inventory, /maintenance, /ai-chat, /ai-agent, /settings, /profile
+   - Maintain session/localStorage for persistent login
+   - Framer Motion transitions between routes
+
+3. UI & Visual Enhancements
+   - Unified color scheme, typography, buttons
+   - Add alerts/toast notifications
+   - Display active user info in top-right corner
+
+4. AI Personalization
+   - Link users to their own AI chat history
+   - AI Chat can query system data (inventory, maintenance, alerts)
+   - Role-based personalized AI suggestions
+
+5. Final Deployment & Verification
+   - Deploy to Netlify (same project)
+   - Run automated UI test suite (Playwright/Cypress optional)
+   - Provide final verification log + URL to Haroon
+
+-------------------------------------------------------------
+⚙️ Execution Directives for Klein
+-------------------------------------------------------------
+1. Restart PostgreSQL before migration
+2. Rebuild frontend + backend, ensure all dependencies installed
+3. Run full integration tests (AI, DB, UI)
+4. Deploy final version and share:
+   - ✅ Verified modules
+   - ✅ AI Chat/Agent operational
+   - ✅ DB sync confirmed
+   - ✅ UI/UX compliance passed
+   - ⚠️ Pending issues (if any)
+
+-------------------------------------------------------------
+📦 Prompt Label for Klein
+-------------------------------------------------------------
+Task Name: Phase 7.8 & 7.9 – Unified Frontend, AI Recovery, and User Registration
+Deployment Target: Netlify (lambent-raindrop-ec0707)
+Focus: Complete UI/UX, AI Chat restoration, authentication, and live testing readiness

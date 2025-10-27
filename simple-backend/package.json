@@ -1,0 +1,21 @@
+{
+  "name": "mbarie-fms-simple-backend",
+  "version": "1.0.0",
+  "description": "Simplified backend for Mbarie FMS AI with DeepSeek integration",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "axios": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["facility-management", "ai", "deepseek", "backend"],
+  "author": "Mbarie Services Ltd",
+  "license": "MIT"
+}

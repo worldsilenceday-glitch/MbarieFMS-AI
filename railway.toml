@@ -1,0 +1,7 @@
+[build]
+buildCommand = "cd server && npm run build"
+
+[start]
+startCommand = "cd server && npm start"
+healthcheckPath = "/api/status"
+healthcheckTimeout = 300

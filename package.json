@@ -1,0 +1,30 @@
+{
+  "name": "mbarie-fms-ai",
+  "version": "1.0.0",
+  "description": "Mbarie Field Management System with AI capabilities",
+  "type": "module",
+  "scripts": {
+    "verify-deployment": "node verifyDeployment.js",
+    "verify-deployment:urls": "node verifyDeployment.js --urls",
+    "verify-deployment:help": "node verifyDeployment.js --help",
+    "verify-deployment:prod": "VITE_SERVER_URL=https://your-backend.com VITE_CLIENT_URL=https://your-frontend.com node verifyDeployment.js"
+  },
+  "keywords": [
+    "field-management",
+    "ai",
+    "react",
+    "nodejs",
+    "docker"
+  ],
+  "author": "Mbarie Services Ltd",
+  "license": "MIT",
+  "devDependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2"
+  }
+}
