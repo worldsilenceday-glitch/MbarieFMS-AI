@@ -11,6 +11,7 @@ import reportRoutes from './routes/reports';
 import chatAgentRoutes from './routes/chat-agent';
 import emailApprovalRoutes from './routes/email-approval';
 import communicationRoutes from './routes/communication';
+import notificationRoutes from './routes/notifications';
 
 // Phase 5 Routes
 import orgRoutes from './routes/org';
@@ -24,6 +25,10 @@ import aiServicesRoutes from './routes/ai-services';
 
 // AI Monitoring Agent
 import { startMonitoringAgent } from './ai-agent/monitor-agent';
+
+// Phase 8.5 Monitoring & Scaling
+import healthRoutes from './routes/health';
+import { startScheduler } from './cron/scheduler';
 
 // Load environment variables
 dotenv.config();
@@ -47,6 +52,7 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/chat-agent', chatAgentRoutes);
 app.use('/api/email-approval', emailApprovalRoutes);
 app.use('/api/communication', communicationRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Phase 5 Routes
 app.use('/api/org', orgRoutes);
@@ -58,7 +64,10 @@ app.use('/api/hsse', hsseRoutes);
 // Phase 6 AI Services
 app.use('/api/ai', aiServicesRoutes);
 
-// Health check
+// Phase 8.5 Monitoring & Scaling
+app.use('/api/system', healthRoutes);
+
+// Health check (legacy - kept for backward compatibility)
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
@@ -109,6 +118,9 @@ app.listen(PORT, () => {
   
   // Start AI Monitoring Agent
   startMonitoringAgent();
+  
+  // Start Phase 8.5 Monitoring Scheduler
+  startScheduler();
 });
 
 // Graceful shutdown

@@ -121,10 +121,10 @@ router.get('/verify', authenticateToken, async (req, res) => {
 });
 
 // Change password
-router.post('/change-password', authenticateToken, async (req, res) => {
+router.post('/change-password', authenticateToken, async (req: any, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
-    const userId = req.user.userId;
+    const userId = req.user?.userId;
 
     if (!currentPassword || !newPassword) {
       return res.status(400).json({ error: 'Current password and new password are required' });
@@ -174,9 +174,9 @@ router.get('/users', authenticateToken, requireRole([UserRole.ADMIN]), async (re
 });
 
 // Get current user profile
-router.get('/profile', authenticateToken, async (req, res) => {
+router.get('/profile', authenticateToken, async (req: any, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user?.userId;
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -206,9 +206,9 @@ router.get('/profile', authenticateToken, async (req, res) => {
 });
 
 // Update user profile
-router.put('/profile', authenticateToken, async (req, res) => {
+router.put('/profile', authenticateToken, async (req: any, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user?.userId;
     const { firstName, lastName, jobTitle, department, facility } = req.body;
 
     const user = await prisma.user.update({
